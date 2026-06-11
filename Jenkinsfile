@@ -78,9 +78,4 @@ User.objects.filter(username='admin').exists() or User.objects.create_superuser(
         }
     }
 }
-:::
 
-### Save the file
-
-```bash
-vi Jenkinsfile
