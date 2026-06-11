@@ -6,7 +6,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                url: 'https://github.com/shanmathisivakumar/Pipeline-Django-Project.git
+                    url: 'https://github.com/shanmathisivakumar/Pipeline-Django-Project.git'
             }
         }
 
@@ -14,7 +14,7 @@ pipeline {
             steps {
                 sh '''
                 python3 -m venv venv
-                source venv/bin/activate
+                . venv/bin/activate
                 pip install -r requirements.txt
                 '''
             }
@@ -23,7 +23,7 @@ pipeline {
         stage('Migration') {
             steps {
                 sh '''
-                source venv/bin/activate
+                . venv/bin/activate
                 python manage.py migrate
                 '''
             }
@@ -32,7 +32,7 @@ pipeline {
         stage('Collect Static') {
             steps {
                 sh '''
-                source venv/bin/activate
+                . venv/bin/activate
                 python manage.py collectstatic --noinput
                 '''
             }
@@ -41,6 +41,7 @@ pipeline {
         stage('Run Django') {
             steps {
                 sh '''
+                . venv/bin/activate
                 nohup python manage.py runserver 0.0.0.0:8000 &
                 '''
             }
