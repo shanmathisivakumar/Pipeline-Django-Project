@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block title %}Order Details - Flipkart{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8">
+            <h2 class="mb-4">Order #{{ order.id }}</h2>
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Order Information</h5>
+                    <hr>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <strong>Order Date:</strong><br>
+                                {{ order.order_date|date:"d M, Y H:i" }}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <strong>Status:</strong><br>
+                                {% if order.status == 'pending' %}
+                                    <span class="badge bg-warning">Pending</span>
+                                {% elif order.status == 'confirmed' %}
+                                    <span class="badge bg-info">Confirmed</span>
+                                {% elif order.status == 'shipped' %}
+                                    <span class="badge bg-primary">Shipped</span>
+                                {% elif order.status == 'delivered' %}
+                                    <span class="badge bg-success">Delivered</span>
+                                {% elif order.status == 'cancelled' %}
+                                    <span class="badge bg-danger">Cancelled</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <p class="mb-0">
+                        <strong>Shipping Address:</strong><br>
+                        {{ order.shipping_address }}
+                    </p>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Order Items</h5>
+                    <hr>
+                    
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order_items %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ item.product.name }}</strong><br>
+                                            <small class="text-muted">{{ item.product.description|truncatewords:15 }}</small>
+                                        </td>
+                                        <td>{{ item.quantity }}</td>
+                                        <td>${{ item.price }}</td>
+                                        <td>${{ item.get_total }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Order Summary</h5>
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Subtotal:</span>
+                        <span>${{ order.total_amount }}</span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Shipping:</span>
+                        <span>Free</span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Tax:</span>
+                        <span>$0</span>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between mb-4">
+                        <strong>Total Amount:</strong>
+                        <strong class="product-price">${{ order.total_amount }}</strong>
+                    </div>
+                    
+                    {% if order.status == 'pending' %}
+                        <div class="alert alert-warning">
+                            <small>Your order is pending confirmation. We'll send you a confirmation email soon.</small>
+                        </div>
+                    {% elif order.status == 'confirmed' %}
+                        <div class="alert alert-info">
+                            <small>Your order has been confirmed and will be shipped soon.</small>
+                        </div>
+                    {% elif order.status == 'shipped' %}
+                        <div class="alert alert-primary">
+                            <small>Your order has been shipped. Track your package with the tracking number provided in your email.</small>
+                        </div>
+                    {% elif order.status == 'delivered' %}
+                        <div class="alert alert-success">
+                            <small>Your order has been delivered. Thank you for your purchase!</small>
+                        </div>
+                    {% elif order.status == 'cancelled' %}
+                        <div class="alert alert-danger">
+                            <small>Your order has been cancelled. Please contact support for more information.</small>
+                        </div>
+                    {% endif %}
+                    
+                    <a href="{% url 'order_history' %}" class="btn btn-outline-secondary w-100">Back to Orders</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

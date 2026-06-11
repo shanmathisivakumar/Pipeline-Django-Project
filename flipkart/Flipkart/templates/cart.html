@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Shopping Cart - Flipkart{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">Shopping Cart</h2>
+    
+    {% if cart_items %}
+        <div class="row">
+            <div class="col-md-8">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in cart_items %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ item.product.name }}</strong>
+                                    </td>
+                                    <td>${{ item.product.price }}</td>
+                                    <td>
+                                        <form method="post" action="{% url 'update_cart' item.id %}" class="d-flex" style="max-width: 120px;">
+                                            {% csrf_token %}
+                                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="100" class="form-control form-control-sm" style="width: 60px;">
+                                            <button type="submit" class="btn btn-sm btn-info ms-2">Update</button>
+                                        </form>
+                                    </td>
+                                    <td>${{ item.get_total }}</td>
+                                    <td>
+                                        <a href="{% url 'remove_from_cart' item.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?');">Remove</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Order Summary</h5>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal:</span>
+                            <span>${{ total }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Shipping:</span>
+                            <span>Free</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-4">
+                            <strong>Total:</strong>
+                            <strong class="product-price">${{ total }}</strong>
+                        </div>
+                        <a href="{% url 'checkout' %}" class="btn btn-primary w-100 mb-2">Proceed to Checkout</a>
+                        <a href="{% url 'home' %}" class="btn btn-outline-secondary w-100">Continue Shopping</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center py-5">
+            <h4>Your cart is empty</h4>
+            <p>Start shopping to add items to your cart</p>
+            <a href="{% url 'home' %}" class="btn btn-primary mt-3">Continue Shopping</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

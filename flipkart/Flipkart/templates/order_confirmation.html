@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}Order Confirmation - Flipkart{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-body text-center p-5">
+                    <div style="font-size: 3rem; color: #28a745; margin-bottom: 20px;">
+                        ✓
+                    </div>
+                    <h2 class="card-title mb-3">Order Confirmed!</h2>
+                    <p class="text-muted mb-4">Thank you for your purchase. Your order has been confirmed.</p>
+                    
+                    <div class="alert alert-info">
+                        <h5>Order #{{ order.id }}</h5>
+                    </div>
+                    
+                    <div class="text-start mb-4">
+                        <h5 class="mb-3">Order Details</h5>
+                        
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Order Date:</span>
+                            <strong>{{ order.order_date|date:"d M, Y" }}</strong>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Status:</span>
+                            <span class="badge bg-warning">{{ order.get_status_display }}</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Shipping Address:</span>
+                        </div>
+                        <p class="ps-3 mb-3">{{ order.shipping_address }}</p>
+                        
+                        <hr>
+                        
+                        <h5 class="mb-3">Items</h5>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order_items %}
+                                    <tr>
+                                        <td>{{ item.product.name }}</td>
+                                        <td>{{ item.quantity }}</td>
+                                        <td>${{ item.price }}</td>
+                                        <td>${{ item.get_total }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        
+                        <hr>
+                        
+                        <div class="d-flex justify-content-end mb-3">
+                            <div style="width: 300px;">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Subtotal:</span>
+                                    <span>${{ order.total_amount }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Shipping:</span>
+                                    <span>Free</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Tax:</span>
+                                    <span>$0</span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between">
+                                    <strong>Total Amount:</strong>
+                                    <strong class="product-price">${{ order.total_amount }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex gap-2 justify-content-center mt-4">
+                        <a href="{% url 'order_history' %}" class="btn btn-primary">View All Orders</a>
+                        <a href="{% url 'home' %}" class="btn btn-outline-secondary">Continue Shopping</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

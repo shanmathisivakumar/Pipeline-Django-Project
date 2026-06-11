@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home - Flipkart{% endblock %}
+
+{% block content %}
+<div id="heroCarousel" class="carousel slide hero-section" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <div class="container text-center">
+                <img src="{% static '8947416.jpg' %}" class="d-block w-100" alt="Hero Image 1" style="height: 400px; object-fit: cover;">
+                <h1>Traditional Agricultural Marketing</h1>
+                <p>In the traditional agricultural marketing system, farmers rely heavily on intermediaries such as middlemen, wholesalers, and retailers to sell their produce.</p>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <div class="container text-center">
+                <img src="{% static '7886967.jpg' %}" class="d-block w-100" alt="Hero Image 2" style="height: 400px; object-fit: cover;">
+                <h1>Challenges for Farmers</h1>
+                <p>Dependence on middlemen often leads to reduced earnings and lack of market transparency for farmers.</p>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <div class="container text-center">
+                <img src="{% static '10135204.jpg' %}" class="d-block w-100" alt="Hero Image 3" style="height: 400px; object-fit: cover;">
+                <h1>Need for Direct Access</h1>
+                <p>Providing direct market access can help farmers secure better prices and reduce exploitation.</p>
+            </div>
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+
+<div class="container py-5">
+    <h2 class="mb-4">Featured Products</h2>
+    <!-- category filter buttons -->
+    <div class="mb-4">
+        <a href="{% url 'home' %}" class="btn btn-sm btn-outline-primary {% if not selected_category %}active{% endif %}">All</a>
+        {% for cat in categories %}
+            <a href="{% url 'category_products' cat %}" class="btn btn-sm btn-outline-primary {% if selected_category == cat %}active{% endif %}">{{ cat|capfirst }}</a>
+        {% endfor %}
+    </div>
+    
+    {% if products %}
+        <div class="row">
+            {% for product in products %}
+                <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
+                    <div class="card">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 250px; object-fit: cover;">
+                        {% else %}
+                            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 250px;">
+                                <span class="text-white">No Image</span>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text text-muted">{{ product.description|truncatewords:10 }}</p>
+                            <p class="product-price">${{ product.price }}</p>
+                            <p class="text-muted">
+                                {% if product.stock > 0 %}
+                                    <span class="badge bg-success">In Stock ({{ product.stock }})</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Out of Stock</span>
+                                {% endif %}
+                            </p>
+                            {% if user.is_authenticated %}
+                                {% if product.stock > 0 %}
+                                    <form method="post" action="{% url 'add_to_cart' product.id %}">
+                                        {% csrf_token %}
+                                        <div class="input-group mb-2">
+                                            <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="form-control" style="max-width: 80px;">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary w-100">Add to Cart</button>
+                                    </form>
+                                {% else %}
+                                    <button class="btn btn-secondary w-100" disabled>Out of Stock</button>
+                                {% endif %}
+                            {% else %}
+                                <a href="{% url 'login' %}" class="btn btn-primary w-100">Login to Buy</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            <h4>No products available</h4>
+            <p>Check back soon for amazing deals!</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
