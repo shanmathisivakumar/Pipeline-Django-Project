@@ -4,8 +4,13 @@ pipeline {
 
     environment {
         VENV = "venv"
+        ALLOWED_HOSTS = "18.117.83.22,localhost,127.0.0.1"
     }
 
+    stages {
+        // your stages here
+    }
+}
     stages {
 
         stage('Checkout') {
