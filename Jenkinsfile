@@ -1,50 +1,92 @@
 pipeline {
-    agent any
+agent any
 
-    stages {
+```
+environment {
+    VENV = "venv"
+}
 
-        stage('Checkout') {
-            steps {
-                git branch: 'main',
-                    url: 'https://github.com/shanmathisivakumar/Pipeline-Django-Project.git'
-            }
+stages {
+
+    stage('Checkout') {
+        steps {
+            git branch: 'main',
+                credentialsId: 'github-pat',
+                url: 'https://github.com/shanmathisivakumar/Pipeline-Django-Project.git'
         }
+    }
 
-        stage('Install Dependencies') {
-            steps {
+    stage('Setup Python Environment') {
+        steps {
+            dir('flipkart/Flipkart') {
                 sh '''
-                python3 -m venv venv
-                . venv/bin/activate
+                python3 -m venv $VENV
+                . $VENV/bin/activate
+                pip install --upgrade pip
                 pip install -r requirements.txt
                 '''
             }
         }
+    }
 
-        stage('Migration') {
-            steps {
+    stage('Migrate Database') {
+        steps {
+            dir('flipkart/Flipkart') {
                 sh '''
-                . venv/bin/activate
+                . $VENV/bin/activate
                 python manage.py migrate
                 '''
             }
         }
+    }
 
-        stage('Collect Static') {
-            steps {
+    stage('Collect Static Files') {
+        steps {
+            dir('flipkart/Flipkart') {
                 sh '''
-                . venv/bin/activate
+                . $VENV/bin/activate
                 python manage.py collectstatic --noinput
                 '''
             }
         }
+    }
 
-        stage('Run Django') {
-            steps {
+    stage('Create Admin User') {
+        steps {
+            dir('flipkart/Flipkart') {
                 sh '''
-                . venv/bin/activate
-                nohup python manage.py runserver 0.0.0.0:8000 &
+                . $VENV/bin/activate
+                python manage.py shell << EOF
+```
+
+from django.contrib.auth import get_user_model
+User = get_user_model()
+if not User.objects.filter(username='admin').exists():
+User.objects.create_superuser(
+'admin',
+'[sshanmathi2502@gmail.com](mailto:sshanmathi2502@gmail.com)',
+'Admin@123'
+)
+EOF
+'''
+}
+}
+}
+
+```
+    stage('Start Django') {
+        steps {
+            dir('flipkart/Flipkart') {
+                sh '''
+                pkill -f "manage.py runserver" || true
+                . $VENV/bin/activate
+                nohup python manage.py runserver 0.0.0.0:8000 > app.log 2>&1 &
                 '''
             }
         }
     }
 }
+```
+
+}
+
