@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
 
@@ -7,10 +6,6 @@ pipeline {
         ALLOWED_HOSTS = "18.117.83.22,localhost,127.0.0.1"
     }
 
-    stages {
-        // your stages here
-    }
-}
     stages {
 
         stage('Checkout') {
@@ -83,4 +78,3 @@ User.objects.filter(username='admin').exists() or User.objects.create_superuser(
         }
     }
 }
-
