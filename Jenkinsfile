@@ -1,7 +1,4 @@
 
-and malformed Python code. Remove all of that and replace the entire file with this valid Jenkins Declarative Pipeline:
-
-:::writing{variant="document" id="58372"}
 pipeline {
     agent any
 
